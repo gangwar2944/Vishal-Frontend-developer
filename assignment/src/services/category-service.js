@@ -15,15 +15,12 @@ export async function getAPIData(queryString) {
         apiUrl = `https://api.spacexdata.com/v3/capsules?${queryString}`;
     }
  
-    try {
-      const response = await fetchDataWithDelay(apiUrl);
-      if (!response.ok) {
-        throw new Error('API request failed');
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      throw error;
+    const response = await fetchDataWithDelay(apiUrl);
+    if (!response.ok) {
+      throw new Error('API request failed');
     }
+    const data = await response.json();
+    return data;
+    
   }
   
