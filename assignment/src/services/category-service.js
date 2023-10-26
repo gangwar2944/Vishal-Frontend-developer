@@ -1,19 +1,8 @@
-// api.js
-
-// export async function getAPIData() {
-//     const apiUrl = 'https://api.spacexdata.com/v3/capsules';
-  
-//     try {
-//       const response = await fetch(apiUrl);
-//       if (!response.ok) {
-//         throw new Error('API request failed');
-//       }
-//       const data = await response.json();
-//       return data;
-//     } catch (error) {
-//       throw error;
-//     }
-//   }
+async function fetchDataWithDelay(apiUrl){
+  await new Promise(resolve=> setTimeout(resolve,1000));
+  const response = await fetch(apiUrl);
+  return response;
+}
 export async function getAPIData(queryString) {
     // console.log("status :" , status);
     // console.log("type :" , type);
@@ -27,7 +16,7 @@ export async function getAPIData(queryString) {
     }
  
     try {
-      const response = await fetch(apiUrl);
+      const response = await fetchDataWithDelay(apiUrl);
       if (!response.ok) {
         throw new Error('API request failed');
       }
