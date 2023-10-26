@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import { miniMobile, tablate } from '../responsive';
@@ -11,10 +11,19 @@ const ModalContainer = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent background */
+  /* background-color: rgba(0, 0, 0, 0.2);  */
   justify-content: center;
   align-items: center;
   z-index: 1000; /* Ensure it's on top of other elements */
+  animation: modalOpen .3s ease-in-out; 
+  @keyframes modalOpen {
+    from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
 
   &.show {
     display: flex;
@@ -26,8 +35,7 @@ const ModalContent = styled.div`
   background-color: #fff; /* White background */
   padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Shadow for the modal */
-  /* max-width: 80%;  */
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   width: 50%;
   text-align: center;
   position: relative;
@@ -70,7 +78,6 @@ const ModalOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  /* background-color: rgba(0, 0, 0, 0.8);  */
   z-index: 999; /* Place it below the modal */
 `;
 
