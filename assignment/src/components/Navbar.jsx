@@ -9,6 +9,7 @@ const Container = styled.div`
     left: 0;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     background-color: #fff;
+    z-index: 1000;
 `
 const Wrapper = styled.div`
   width: 90%;
