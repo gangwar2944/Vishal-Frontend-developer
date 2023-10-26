@@ -2,40 +2,40 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Modal from "./Modal";
 import CategoryItemViewPage from "./CategoryItemViewPage";
-
+import { miniLaptop, miniMobile, mobile, tablate} from "../responsive";
 const Cart = styled.div`
-  /* border: 1px solid #ccc; */
   padding: 25px;
   border-radius: 5px;
-  width: 300px;
+  width: 210px;
   background-color: #fff;
   margin: 10px;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-`;
-const CartHeader = styled.div`
-  background-color: #0055FB;
-  color: white;
-  padding: 5px;
-  text-align: center;
-  font-weight: bold;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   cursor: pointer;
-  border-radius: 10px;
+  ${miniLaptop({width: "210px",padding: "15px"})}
+  ${mobile({width:"160px",padding:"10px",margin:"4px"})}
+  ${miniMobile({width:"140px",padding:"8px",margin:"4px"})}
+
 `;
 const CartDetails = styled.div`
-  padding: 10px;
 `;
-const Para= styled.p`
-    display: flex;
-    margin: 5px 0;
-    /* justify-content: space-between; */
-`
-const Strong= styled.strong`
-    flex: 1;
-`
-const Para2= styled.p`
-    flex: 1;
-    margin-left: 5px;
-`
+const DetailContainer = styled.p`
+  display: flex;
+  margin: 5px 0;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin: 8px 0;
+`;
+const Key = styled.p`
+  flex: 1;
+  font-size: 12px;
+  margin-bottom: 5px;
+`;
+const Para = styled.p`
+  flex: 1;
+  font-size: 14px;
+  color: #a29e9e;
+
+`;
 const CategoryItem = (props) => {
   const jsonData = props.data;
   //   console.log("props dat : ", jsonData.missions);
@@ -52,49 +52,36 @@ const CategoryItem = (props) => {
     document.body.classList.remove("body-scroll-lock");
   };
   return (
-    <Cart>
-      <CartHeader onClick={openEditProductpage} className="addBtn">
-        View Capsule Details
-      </CartHeader>
-      <Modal isOpen={isEditProductPage} onClose={closeEditProductModal}>
-        <CategoryItemViewPage data={jsonData} onClose={closeEditProductModal} />
-      </Modal>
-
+    <>
+    <Cart onClick={openEditProductpage} >
       <CartDetails>
-        <Para>
-          <Strong>Capsule Serial:</Strong> <Para2>{jsonData.capsule_serial}</Para2>
-        </Para>
-        <Para>
-          <Strong>Capsule ID:</Strong> <Para2>{jsonData.capsule_id}</Para2>
-        </Para>
-        <Para>
-          <Strong>Status:</Strong> <Para2>{jsonData.status}</Para2>
-        </Para>
-        <Para>
-          <Strong>Original Launch:</Strong> <Para2>{jsonData.original_launch?.substring(0,19)}</Para2>
-        </Para>
-        {/* <Para2>{jsonData.missions.map((item, index) => (
-          <div key={index} style={{backgroundColor:"#fff"}}>
-            <Para>
-              <Strong>Mission Name:</Strong> <Para2>{item.name}</Para2>
-            </Para>
-            <Para>
-              <Strong>Flight:</Strong> <Para2>{item.flight}</Para2>
-            </Para>
-          </div>
-        ))}
-        </Para2> */}
-        <Para>
-          <Strong>Landings:</Strong> <Para2>{jsonData.landings}</Para2>
-        </Para>
-        <Para>
-          <Strong>Type:</Strong> <Para2>{jsonData.type}</Para2>
-        </Para>
-        <Para>
-          <Strong>Reuse Count:</Strong> <Para2>{jsonData.reuse_count}</Para2>
-        </Para>
+        <DetailContainer>
+          <Key>Capsule Serial</Key> <Para>{jsonData.capsule_serial}</Para>
+        </DetailContainer>
+        <DetailContainer>
+          <Key>Status</Key> <Para>{jsonData.status}</Para>
+        </DetailContainer>
+        <DetailContainer>
+          <Key>Original Launch</Key>
+          <Para>
+            {" "}
+            {jsonData.original_launch !== null
+              ? jsonData.original_launch
+              : "NA"}
+          </Para>
+        </DetailContainer>
+        <DetailContainer>
+          <Key>Type</Key> <Para>{jsonData.type}</Para>
+        </DetailContainer>
       </CartDetails>
     </Cart>
+     <Modal isOpen={isEditProductPage} onClose={closeEditProductModal}>
+     <CategoryItemViewPage
+       data={jsonData}
+       onClose={closeEditProductModal}
+     />
+   </Modal>
+   </>
   );
 };
 
