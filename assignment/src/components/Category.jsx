@@ -1,8 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
-import CategoryItem from "./CategoryItem";
 import { getAPIData } from "../services/category-service";
 import { mobile, tablate } from "../responsive";
+import CustomInput from "./CustomInput";
+import CustomDropdown from "./CustomDropdown";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import LoaderIcon from "./LoaderIcon";
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import LastPageIcon from '@mui/icons-material/LastPage';
+
+const CategoryItem = lazy(() => import("./CategoryItem"));
 
 const Container = styled.div`
   width: 100%;
@@ -11,16 +19,15 @@ const Container = styled.div`
 const Wrapper = styled.div`
   width: 90%;
   margin: auto;
-  background-color: #ffffff;
+  background-color: #F6FBFF;
   height: auto;
 `;
 const SearchSection = styled.div`
-   padding:20px;
+  padding: 20px;
 `;
 const Heading = styled.h2`
   margin: 10px;
   font-size: 30px;
-
 `;
 const FormContainer = styled.div`
   width: 100%;
@@ -34,86 +41,177 @@ const Form = styled.form`
 const Label = styled.div`
   width: 24%;
   margin: auto;
-  padding: 10px;
-  
-  ${tablate({ width: "40%" })}
-  ${mobile({ width: "100%" })}
-  /* border: 1px solid; */
+  ${tablate({ width: "45%" })}
+  ${mobile({ width: "100%" })} /* border: 1px solid; */
 `;
 
-const Input = styled.input`
-  padding: 8px;
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid #282525;
-`;
-const Select = styled.select`
-  padding: 8px;
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid #282525;
-`;
 const Button = styled.button`
-  padding: 8px;
   width: 100%;
-  background-color: #0055fb;
+  appearance: button;
+  background-color: #1652f0;
+  border: 1px solid #1652f0;
+  border-radius: 4px;
+  box-sizing: border-box;
   color: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #282525;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.15;
+  overflow: visible;
+  padding: 12px 16px;
+  position: relative;
+  text-align: center;
+  text-transform: none;
+  transition: all 80ms ease-in-out;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  /* width: fit-content; */
+  &:hover {
+    background-color: #0843d7; /* Change color on hover */
+  }
+
+  &:active {
+    background-color: #0441dc; /* Change color when button is clicked */
+  }
 `;
 const CategorySection = styled.div``;
+const LoaderContainer = styled.section`
+  /* background-color:  rgba(0, 0, 0, 0.3); */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* padding: 20px; */
+  ${mobile({marginLeft:"30px",marginTop:"20px"})}
+`;
+
 const CartCategoryContainer = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  gap: 30px;
   flex-wrap: wrap;
+  ${tablate({ gap: "20px", marginLeft: "15px" })}
+  ${mobile({ gap: "0px", marginLeft: "0px" })}
 `;
+const NoData = styled.div`
+  width: 100%;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #9d9494;
+`;
+
 const Pagination = styled.div`
   display: flex;
   justify-content: flex-end;
   margin: 10px;
-  ${mobile({justifyContent:"center"})}
+  ${tablate({ justifyContent: "center" })}
+`;
+const PagenationContainer = styled.div`
+  display: flex;
+  border: 1px solid #0055fb;
+  border-radius: 10px;
+  margin-bottom: 10px;
+`;
+const FirstAndLastPagination = styled.div`
+  display: flex;
+  border: 1px solid #0055fb;
+  border-radius: 10px;
+  margin-bottom: 10px;
+`;
+const PreviousPage = styled.p`
+  border-right: 2px solid #0055fb;
+  padding: 7px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #0055fb;
+  cursor: pointer;
+  ${({ disabled }) =>
+    disabled &&
+    `
+    color:grey;
+  `}
+`;
+const NextPage = styled.p`
+  border-left: 2px solid #0055fb;
+  padding: 7px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #0055fb;
+  cursor: pointer;
+  ${({ disabled }) =>
+    disabled &&
+    `
+    color:grey;
+  `}
 `;
 
 const PageButton = styled.button`
-  width: 40px;
+  width: fit-content;
   height: 40px;
-  border-radius: 50%;
-  padding: 8px;
-  margin: 10px 5px;
+  padding: 10px 15px;
   background-color: #0055fb;
   color: #ffffff;
-  /* border-radius: 10px; */
-  border: 1px solid #0055fb;
   cursor: pointer;
   background-color: ${(props) => (props.isActive ? "#0055FB" : "#FFFFFF")};
   color: ${(props) => (props.isActive ? "#FFFFFF" : "#0055FB")};
-  border: 1px solid #0055fb;
+  /* border: 1px solid #0055fb; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+
+  ${mobile({ padding: "5px 8px" })}
 `;
 const Category = () => {
-  const [status, setStatus] = useState("");
-  const [type, setType] = useState("");
-  const [original_launch, setOriginal_launch] = useState("");
+  const options = [
+    { id: 1, value: "retired" },
+    { id: 2, value: "active" },
+    { id: 3, value: "unknown" },
+  ];
+
+  const [searchFormData, setSearchFormData] = useState({
+    type: "",
+    originalLaunch: "",
+    status: "",
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    console.log("name", name);
+    console.log("value", value);
+    console.log("test", searchFormData);
+    setSearchFormData({
+      ...searchFormData,
+      [name]: value,
+    });
+  };
 
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // You can perform your search logic here
-    console.log("Selected Option:", status);
-    console.log("Input 1:", type);
-    console.log("Input 2:", original_launch);
     getData();
   };
 
   const [capsules, setCapsules] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(4); //
-  //   console.log("cap : ",capsules)
+  const [itemsPerPage] = useState(10);
 
   useEffect(() => {
     // Call the getAPIData function to fetch data
-    getAPIData(status, type, original_launch)
-      .then((data) => setCapsules(data))
-      .catch((error) => console.error("Error fetching data:", error));
+    getAPIData()
+      .then((data) => {
+        setCapsules(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setIsLoading(false);
+      });
   }, []);
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -128,27 +226,45 @@ const Category = () => {
   const createQueryString = () => {
     const queryParams = [];
 
-    if (status) {
-      queryParams.push(`status=${status}`);
+    if (searchFormData.status) {
+      queryParams.push(`status=${searchFormData.status.trim()}`);
     }
 
-    if (type) {
-      queryParams.push(`type=${type}`);
+    if (searchFormData.type) {
+      queryParams.push(`type=${searchFormData.type.trim()}`);
     }
 
-    if (original_launch) {
-      queryParams.push(`original_launch=${original_launch}`);
+    if (searchFormData.originalLaunch) {
+      queryParams.push(`original_launch=${searchFormData.originalLaunch.trim()}`);
     }
 
     return queryParams.join("&");
   };
   const getData = () => {
     const queryString = createQueryString();
-
+    setIsLoading(true);
     // console.log("queryString",queryString);
     getAPIData(queryString)
-      .then((data) => setCapsules(data))
-      .catch((error) => console.error("Error fetching data:", error));
+      .then((data) => {
+        setCapsules(data);
+        setIsLoading(false);
+        setSearchFormData(
+          {
+            type: searchFormData.type.trim(),
+            originalLaunch: searchFormData.originalLaunch.trim(),
+            status:searchFormData.status.trim(),
+          })
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setIsLoading(false);
+        setSearchFormData(
+          {
+            type: "",
+            originalLaunch: "",
+            status: "",
+          })
+      });
   };
 
   return (
@@ -156,40 +272,43 @@ const Category = () => {
       <Container>
         <Wrapper>
           <SearchSection>
-            <Heading>Search form</Heading>
+            <Heading>Capsules</Heading>
             <FormContainer>
               <Form onSubmit={handleSubmit}>
-               
                 <Label>
-                  <Input
+                  <CustomInput
                     type="text"
-                    placeholder="type"
-                    value={type}
-                    onChange={(e) => setType(e.target.value)}
+                    name="type"
+                    placeholder="Type"
+                    value={searchFormData.type}
+                    onChange={handleInputChange}
+                  />
+                </Label>
+                <Label>
+                  <CustomInput
+                    type="text"
+                    name="originalLaunch"
+                    placeholder="Original lunch"
+                    value={searchFormData.originalLaunch}
+                    onChange={handleInputChange}
+                  />
+                </Label>
+                <Label>
+                  <CustomDropdown
+                    selectedValue={searchFormData.status}
+                    placeholder="Select Status"
+                    name="status"
+                    value={searchFormData.status}
+                    options={options}
+                    onChange={(e) =>
+                      setSearchFormData({
+                        ...searchFormData,
+                        status: e.target.value,
+                      })
+                    }
                   />
                 </Label>
 
-                <Label>
-                  <Input
-                    type="text"
-                    placeholder="original lunch"
-                    value={original_launch}
-                    onChange={(e) => setOriginal_launch(e.target.value)}
-                  />
-                </Label>
-                <Label>
-                  <Select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                  >
-                    {/* <option value="" disabled defaultValue> */}
-                    <option value="">Select an option</option>{" "}
-                    {/* Option1 is disabled */}
-                    <option value="retired">retired</option>
-                    <option value="active">active</option>
-                    <option value="unknown">unknown</option>
-                  </Select>
-                </Label>
                 <Label>
                   <Button type="submit">Search</Button>
                 </Label>
@@ -198,22 +317,68 @@ const Category = () => {
           </SearchSection>
           <CategorySection>
             <CartCategoryContainer>
-              {currentItems.map((item, index) => (
-                <CategoryItem data={item} key={index} />
-              ))}
+              {isLoading ? (
+                <LoaderContainer>
+                  <LoaderIcon styled={{zIndex:"1002"}}/>
+                </LoaderContainer>
+              ) : currentItems.length !== 0 ? (
+                currentItems.map((item, index) => (
+                  <CategoryItem data={item} key={index} />
+                ))
+              ) : (
+                <NoData>No record found</NoData>
+              )}
             </CartCategoryContainer>
             <Pagination>
-              {Array.from({
-                length: Math.ceil(capsules.length / itemsPerPage),
-              }).map((_, index) => (
-                <PageButton
-                  key={index}
-                  onClick={() => paginate(index + 1)}
-                  isActive={index + 1 === currentPage}
+              <PagenationContainer>
+
+                <PreviousPage
+                  onClick={() => {
+                    if (currentPage > 1) {
+                      paginate(currentPage - 1);
+                    }
+                  }}
+                  pageNumber={currentPage - 1}
+                  disabled={currentPage <= 1}
                 >
-                  {index + 1}
-                </PageButton>
-              ))}
+                  <NavigateBeforeIcon />
+                  Prev
+                </PreviousPage>
+                {Array.from({
+                  length: Math.ceil(capsules.length / itemsPerPage),
+                }).map((_, index) => (
+                  <PageButton
+                    key={index}
+                    onClick={() => paginate(index + 1)}
+                    isActive={index + 1 === currentPage}
+                  >
+                    {index + 1}
+                  </PageButton>
+                ))}
+                <NextPage
+                  onClick={() => {
+                    if (
+                      Math.ceil(capsules.length / itemsPerPage) > currentPage
+                    ) {
+                      paginate(currentPage + 1);
+                    }
+                  }}
+                  pageNumber={currentPage + 1}
+                  disabled={
+                    currentPage >= Math.ceil(capsules.length / itemsPerPage)
+                  }
+                >
+                  Next
+                  <NavigateNextIcon />
+                </NextPage>{" "}
+              </PagenationContainer>
+              {/* <FirstAndLastPagination>
+              <PageButton><FirstPageIcon onClick={() => paginate(1)}/></PageButton>
+
+              <PageButton><LastPageIcon onClick={() => paginate(Math.ceil(capsules.length / itemsPerPage))}/></PageButton>
+
+              </FirstAndLastPagination> */}
+
             </Pagination>
           </CategorySection>
         </Wrapper>
