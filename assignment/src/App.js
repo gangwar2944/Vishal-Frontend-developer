@@ -1,3 +1,4 @@
+import React from 'react';
 import { Suspense, lazy } from "react";
 import "./App.css";
 import LoaderIcon from "./components/LoaderIcon";
