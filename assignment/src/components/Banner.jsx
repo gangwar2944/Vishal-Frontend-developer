@@ -6,8 +6,8 @@ const Container = styled.div`
   width: 100%;
   height: 400px;
   margin-top: 70px;
-  ${miniMobile({height:"100%",flexWrap:"reverse"})}
-  ${mobile({height:"100%",flexWrap:"reverse"})}
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.16);
+
   ${tablate({height:"100%",flexWrap:"reverse"})}
 
 `;
@@ -15,9 +15,10 @@ const Wrapper = styled.div`
   width: 90%;
   height: 100%;
   margin: auto;
-  background-color: #fff;
+  background-color: #F6FBFF;
   margin-top: 10px;
   /* margin-bottom: 10px; */
+
   
   display: flex;
   ${mobile({flexDirection:"column"})}
