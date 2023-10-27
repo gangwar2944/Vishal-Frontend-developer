@@ -11,6 +11,7 @@ const Cart = styled.div`
   margin: 10px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   cursor: pointer;
+
   ${miniLaptop({width: "210px",padding: "15px"})}
   ${mobile({width:"160px",padding:"10px",margin:"4px"})}
   ${miniMobile({width:"140px",padding:"8px",margin:"4px"})}
@@ -42,6 +43,7 @@ const CategoryItem = (props) => {
 
   const [isEditProductPage, setIsEditProductPage] = useState(false);
 
+
   const openEditProductpage = (item) => {
     setIsEditProductPage(true);
     document.body.classList.add("body-scroll-lock");
@@ -51,6 +53,8 @@ const CategoryItem = (props) => {
     setIsEditProductPage(false);
     document.body.classList.remove("body-scroll-lock");
   };
+
+ 
   return (
     <>
     <Cart onClick={openEditProductpage} >
