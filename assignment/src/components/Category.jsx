@@ -1,5 +1,5 @@
-import React, { Suspense, lazy, useEffect, useState } from "react";
-import styled, { css } from "styled-components";
+import React, {useEffect, useState } from "react";
+import styled from "styled-components";
 import { getAPIData } from "../services/category-service";
 import { mobile, tablate } from "../responsive";
 import CustomInput from "./CustomInput";
@@ -7,10 +7,7 @@ import CustomDropdown from "./CustomDropdown";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import LoaderIcon from "./LoaderIcon";
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import LastPageIcon from '@mui/icons-material/LastPage';
-
-const CategoryItem = lazy(() => import("./CategoryItem"));
+import CategoryItem from "./CategoryItem";
 
 const Container = styled.div`
   width: 100%;
@@ -42,7 +39,7 @@ const Label = styled.div`
   width: 24%;
   margin: auto;
   ${tablate({ width: "45%" })}
-  ${mobile({ width: "100%" })} /* border: 1px solid; */
+  ${mobile({ width: "100%" })}
 `;
 
 const Button = styled.button`
@@ -65,22 +62,19 @@ const Button = styled.button`
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  /* width: fit-content; */
   &:hover {
-    background-color: #0843d7; /* Change color on hover */
+    background-color: #0843d7; 
   }
 
   &:active {
-    background-color: #0441dc; /* Change color when button is clicked */
+    background-color: #0441dc;
   }
 `;
 const CategorySection = styled.div``;
 const LoaderContainer = styled.section`
-  /* background-color:  rgba(0, 0, 0, 0.3); */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* padding: 20px; */
   ${mobile({marginLeft:"30px",marginTop:"20px"})}
 `;
 
@@ -108,12 +102,6 @@ const Pagination = styled.div`
   ${tablate({ justifyContent: "center" })}
 `;
 const PagenationContainer = styled.div`
-  display: flex;
-  border: 1px solid #0055fb;
-  border-radius: 10px;
-  margin-bottom: 10px;
-`;
-const FirstAndLastPagination = styled.div`
   display: flex;
   border: 1px solid #0055fb;
   border-radius: 10px;
@@ -157,7 +145,6 @@ const PageButton = styled.button`
   cursor: pointer;
   background-color: ${(props) => (props.isActive ? "#0055FB" : "#FFFFFF")};
   color: ${(props) => (props.isActive ? "#FFFFFF" : "#0055FB")};
-  /* border: 1px solid #0055fb; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -372,13 +359,6 @@ const Category = () => {
                   <NavigateNextIcon />
                 </NextPage>{" "}
               </PagenationContainer>
-              {/* <FirstAndLastPagination>
-              <PageButton><FirstPageIcon onClick={() => paginate(1)}/></PageButton>
-
-              <PageButton><LastPageIcon onClick={() => paginate(Math.ceil(capsules.length / itemsPerPage))}/></PageButton>
-
-              </FirstAndLastPagination> */}
-
             </Pagination>
           </CategorySection>
         </Wrapper>

@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import { miniMobile, tablate } from '../responsive';
 
 // Modal Container
 const ModalContainer = styled.div`
-  /* display: none; */
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* background-color: rgba(0, 0, 0, 0.2);  */
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensure it's on top of other elements */
+  z-index: 1000;
   animation: modalOpen .3s ease-in-out; 
   @keyframes modalOpen {
     from {
@@ -78,7 +76,7 @@ const ModalOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 999; /* Place it below the modal */
+  z-index: 999; 
 `;
 
 
